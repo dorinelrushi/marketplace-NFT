@@ -1,107 +1,60 @@
-import { ConnectWallet } from "@thirdweb-dev/react";
-import styles from "../styles/Home.module.css";
-import Image from "next/image";
+import {
+  ConnectWallet,
+  useDirectListings,
+  useContract,
+} from "@thirdweb-dev/react";
+
 import { NextPage } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
 const Home: NextPage = () => {
+  const { contract } = useContract(
+    "0xF94710B5b7D2c98C67Eb2883B0A625d9143AfAE5",
+    "marketplace-v3"
+  );
+  const {
+    data: directListings,
+    isLoading,
+    error,
+  } = useDirectListings(contract, { start: 0, count: 100 });
+
+
+
+
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            Welcome to{" "}
-            <span className={styles.gradientText0}>
-              <a
-                href="https://thirdweb.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                thirdweb.
-              </a>
-            </span>
-          </h1>
+    <main >
+      <h1 >
+        Welcome to{" "}
+        <span>
+          <Link
+            href="https://thirdweb.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            thirdweb.
+          </Link>
+        </span>
+      </h1>
+      <ConnectWallet />
 
-          <p className={styles.description}>
-            Get started by configuring your desired network in{" "}
-            <code className={styles.code}>src/index.js</code>, then modify the{" "}
-            <code className={styles.code}>src/App.js</code> file!
-          </p>
+      {isLoading && <div>Loading...</div>}
+  <div className="nftGrid">
 
-          <div className={styles.connect}>
-            <ConnectWallet
-              dropdownPosition={{
-                side: "bottom",
-                align: "center",
-              }}
-            />
-          </div>
+      {!isLoading &&
+        directListings &&
+        directListings.map((nft) => <div className="nftDrop" key={nft.id}>
+          <a href={`/assets/${nft.id}`}>
+            <img src={nft.asset.image}  width={280}  height={280} className="images"/>
+
+          <p>#{nft.asset.name}</p>
+           <p> Price {nft.currencyValuePerToken.displayValue} Matic</p>
+
+          </a>
+
         </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://portal.thirdweb.com/"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/images/portal-preview.png"
-              alt="Placeholder preview of starter"
-              width={300}
-              height={200}
-            />
-            <div className={styles.cardText}>
-              <h2 className={styles.gradientText1}>Portal ➜</h2>
-              <p>
-                Guides, references, and resources that will help you build with
-                thirdweb.
-              </p>
-            </div>
-          </a>
-
-          <a
-            href="https://thirdweb.com/dashboard"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/images/dashboard-preview.png"
-              alt="Placeholder preview of starter"
-              width={300}
-              height={200}
-            />
-            <div className={styles.cardText}>
-              <h2 className={styles.gradientText2}>Dashboard ➜</h2>
-              <p>
-                Deploy, configure, and manage your smart contracts from the
-                dashboard.
-              </p>
-            </div>
-          </a>
-
-          <a
-            href="https://thirdweb.com/templates"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="/images/templates-preview.png"
-              alt="Placeholder preview of templates"
-              width={300}
-              height={200}
-            />
-            <div className={styles.cardText}>
-              <h2 className={styles.gradientText3}>Templates ➜</h2>
-              <p>
-                Discover and clone template projects showcasing thirdweb
-                features.
-              </p>
-            </div>
-          </a>
-        </div>
-      </div>
+      )}
+</div>
     </main>
   );
 };
